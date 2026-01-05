@@ -1,64 +1,47 @@
-============
-ReazonSpeech
-============
+=====================
+reazonspeech.nemo.asr
+=====================
 
-This repository provides access to the main user tooling of ReazonSpeech project.
+This supplies the main interface for using ReazonSpeech NeMo models.
 
-* https://research.reazon.jp/projects/ReazonSpeech/
+**More information can be found at** https://research.reazon.jp/projects/ReazonSpeech
 
 Install
 =======
 
-.. code:: console
+.. code::
 
-   $ git clone https://github.com/reazon-research/ReazonSpeech
-   $ pip install ReazonSpeech/pkg/nemo-asr  # or k2-asr, espnet-asr or espnet-oneseg
+    $ git clone https://github.com/reazon-research/ReazonSpeech
+    $ pip install ReazonSpeech/pkg/nemo-asr
 
-Packages
-========
+Usage
+=====
 
-`reazonspeech.evaluation <pkg/evaluation>`_
+Python interface
+----------------
 
-* Provides a set of tools to evaluate ReazonSpeech models and other speech recognition models.
+.. code:: python3
 
+  from reazonspeech.nemo.asr import load_model, transcribe, audio_from_path
 
-`reazonspeech.nemo.asr <pkg/nemo-asr>`_
+  # Load ReazonSpeech model from Hugging Face
+  model = load_model()
 
-* Implements a fast, accurate speech recognition based on FastConformer-RNNT.
-* The total number of parameters is 619M. Requires `Nvidia Nemo <https://github.com/NVIDIA/NeMo>`_.
+  # Read a local audio file
+  audio = audio_from_path("speech.wav")
 
-`reazonspeech.k2.asr <pkg/k2-asr>`_
+  # Recognize speech
+  ret = transcribe(model, audio)
 
-* Next-gen Kaldi model that is very fast and accurate.
-* The total number of parameters is 159M. Requires `sherpa-onnx <https://github.com/k2-fsa/sherpa-onnx>`_.
-* Also contains a bilingual (ja-en) model, which is highly accurate at language detection in bilingual settings of Japanese and English.
-* For development: "ja-en-mls-5k" model trained on 5k hours of ReazonSpeech and MLS English data each
+Comnand-line interface
+----------------------
 
-`reazonspeech.espnet.asr <pkg/espnet-asr>`_
+.. code::
 
-* Speech recognition with a Conformer-Transducer model.
-* The total number of parameters is 120M. Requires `ESPnet <https://github.com/espnet/espnet>`_.
+    $ reazonspeech-nemo-asr speech.wav
 
-`reazonspeech.espnet.oneseg <pkg/espnet-oneseg>`_
+Use ``-h`` to show a full help.
 
-* Provides a set of tools to analyze Japanese "one-segment" TV stream.
-* Use this package to create Japanese audio corpus.
+.. code::
 
-LICENSE
-=======
-
-::
-
-    Copyright 2022-2025 Reazon Holdings, inc.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+   $ reazonspeech-nemo-asr -h

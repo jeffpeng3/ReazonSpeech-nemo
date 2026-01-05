@@ -7,3 +7,5 @@ __pycache__
 *.zip
 venv/
 /pkg/k2-asr/build/
+.venv
+models/

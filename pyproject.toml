@@ -1,36 +1,20 @@
-# Project file for compatiblity with ReazonSpeech v1.x
-#
-# Purpose: Ensure that existing projects that depend on v1 API
-#          keep working without any matual migration.
-#
-# TODO: Delete this file once people stop using ReazonSpeech v1.x.
-
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "Cython"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "reazonspeech"
-version = "1.1.1"
+name = "reazonspeech-nemo-asr"
+version = "2.2.0"
 dependencies = [
-    "ginza",
-    "ja_ginza",
+    "numpy < 2",
+    "librosa",
     "soundfile",
-    "ffmpeg-python",
-
-    # The following is the minimum set of modules
-    # required to use ESPnet.
-    "six",
-    "typeguard == 2.*",
-    "numpy < 1.24",
     "torch",
-    "torchaudio",
-    "espnet",
-    "espnet_model_zoo @ git+https://github.com/espnet/espnet_model_zoo",
+    "nemo_toolkit[asr] < 2.2",
 ]
 
-[tool.setuptools.package-data]
-"reazonspeech.data" = ["*.txt"]
-
 [tool.setuptools.package-dir]
-"reazonspeech" = "pkg/_v1/src"
+"reazonspeech.nemo.asr" = "src"
+
+[project.scripts]
+reazonspeech-nemo-asr = "reazonspeech.nemo.asr.cli:main"
