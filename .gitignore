@@ -9,3 +9,5 @@ venv/
 /pkg/k2-asr/build/
 .venv
 models/
+build/
+.vscode

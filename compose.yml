@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    runtime: nvidia
+    volumes:
+      - ./:/app
+    init: true
+    tty: true
+    
+    command: bash
