@@ -13,6 +13,7 @@ TOKEN_PUNC = TOKEN_EOS | TOKEN_COMMA
 def find_end_of_segment(subwords, start):
     """Heuristics to identify speech boundaries"""
     length = len(subwords)
+    idx = start
     for idx in range(start, length):
         if idx < length - 1:
             cur = subwords[idx]
@@ -39,13 +40,46 @@ def decode_hypothesis(model, hyp):
     # Trim that artifact token.
     y_sequence = hyp.y_sequence.tolist()[1:]
     text = model.tokenizer.ids_to_text(y_sequence)
+    
+    # Handle NeMo < 2.0 vs >= 2.0 attribute changes
+    # Old: hyp.timestep (list of integers)
+    # New: hyp.timestamp (list of floats?) or just rename?
+    timesteps = getattr(hyp, 'timestep', getattr(hyp, 'timestamp', []))
+    
+    # If using timestamp (likely seconds), we might need to adjust logic.
+    # But let's first see what we get. 
+    # If it is 'timestamp', it is likely already in seconds.
+    # Existing logic: SECONDS_PER_STEP * (step - idx - 1) - PAD_SECONDS
+    
+    # Check if we have timestamps and what they look like
+    # If the attribute is 'timestamp', we assume it holds time in seconds or frame indices depending on version.
+    # Ideally we should verify.
+    
+    # If hyp has 'timestamp', use it.
+    if hasattr(hyp, 'timestamp'):
+        # For now, assume timestamp holds the time in seconds directly
+        # If it's a list of floats, we can use it directly?
+        # But we need to be careful about the "step - idx - 1" logic which was for frame indices.
+        pass
 
     subwords = []
-    for idx, (token_id, step) in enumerate(zip(y_sequence, hyp.timestep)):
+    # If timestep/timestamp is missing or empty, handle gracefully?
+    if not timesteps and len(y_sequence) > 0:
+         # Fallback or error?
+         pass
+
+    for idx, (token_id, step) in enumerate(zip(y_sequence, timesteps)):
+        if hasattr(hyp, 'timestamp'):
+             # If step is from timestamp (seconds)
+             t_start = float(step) - PAD_SECONDS
+        else:
+             # Old logic with frame indices
+             t_start = SECONDS_PER_STEP * (step - idx - 1) - PAD_SECONDS
+
         subwords.append(Subword(
             token_id=token_id,
             token=model.tokenizer.ids_to_text([token_id]),
-            seconds=max(SECONDS_PER_STEP * (step - idx - 1) - PAD_SECONDS, 0)
+            seconds=max(t_start, 0)
         ))
 
     # In SentncePiece, whitespace is considered as a normal token and

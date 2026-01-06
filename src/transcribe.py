@@ -7,7 +7,7 @@ from nemo.collections.asr.models import EncDecRNNTBPEModel
 
 def load_model():
     if torch.cuda.is_available():
-        device = "cuda"
+        device = torch.device("cuda")
     else:
         raise RuntimeError("No GPU available, please use CPU version of ReazonSpeech")
 
@@ -33,12 +33,21 @@ def transcribe(model, audio, config=None):
 
     waveform_tensor = torch.tensor(audio.waveform, dtype=torch.float32)
 
-    hyp, _ = model.transcribe(
+    # NeMo's transcribe method may return a tuple or a list depending on version/config
+    res = model.transcribe(
         [waveform_tensor],
         batch_size=1,
         return_hypotheses=True,
         verbose=config.verbose
     )
+
+    # Handle potential return signature differences
+    if isinstance(res, tuple):
+        hyp = res[0]
+    else:
+        hyp = res
+
+    # Get the first hypothesis (since we processed batch_size=1)
     hyp = hyp[0]
 
     ret = decode_hypothesis(model, hyp)

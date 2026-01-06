@@ -27,7 +27,7 @@ def audio_from_tensor(tensor, samplerate):
     Returns:
       AudioData
     """
-    return audio_from_numpy(tensor.numpy(), samplerate)
+    return audio_from_numpy(tensor.cpu().numpy(), samplerate)
 
 def audio_from_path(path):
     """Load audio from a file
