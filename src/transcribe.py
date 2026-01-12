@@ -2,7 +2,7 @@ import torch
 from .interface import TranscribeConfig
 from .decode import decode_hypothesis, PAD_SECONDS
 from .audio import pad_audio, norm_audio
-from nemo.utils import logging
+
 from nemo.collections.asr.models import EncDecRNNTBPEModel
 
 def load_model():
